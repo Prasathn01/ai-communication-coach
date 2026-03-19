@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
-from app.models.schemas import AnswerRequest, InterviewResponse, TurnFeedback
+from app.models.schemas import AnswerRequest, InterviewResponse
 from app.routes.session import INTERVIEW_QUESTIONS, sessions
+from app.services.llm_service import generate_mock_turn_feedback
 
 router = APIRouter()
 
@@ -23,11 +24,7 @@ def respond_to_interview(answer: AnswerRequest):
         "answer": answer.user_answer
     })
 
-    feedback = TurnFeedback(
-        grammar="Mostly clear sentence structure.",
-        vocabulary="Try to use more professional and specific words.",
-        fluency="Good start. Try to answer in a slightly more structured way."
-    )
+    feedback = generate_mock_turn_feedback(answer.user_answer)
 
     next_index = current_index + 1
     is_complete = next_index >= len(INTERVIEW_QUESTIONS)
